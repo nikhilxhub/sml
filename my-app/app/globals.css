@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+/*
+  Since we are using Tailwind v4 with a config file, we import the config above.
+  The theme configuration is handled in tailwind.config.ts for better JS/TS integration
+  as requested by the user.
+*/
+
+@theme {
+  --font-instrument-serif: var(--font-instrument-serif);
+}
+
+:root {
+  --background: #F7F7F5;
+  --foreground: #1A1A1A;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: "Times New Roman", serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar for a cleaner look */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E5E5E5;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D4D4D4;
+}
