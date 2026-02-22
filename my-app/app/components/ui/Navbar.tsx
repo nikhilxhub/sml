@@ -2,8 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils"; // Wait, I might need to create lib/utils or just inline cn
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { useEffect, useState } from "react";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 // Simple utility for class merging if not present
 function classNames(...classes: (string | undefined | null | false)[]) {
@@ -18,6 +22,39 @@ const navItems = [
 
 export default function Navbar() {
     const pathname = usePathname();
+    const { connection } = useConnection();
+    const { publicKey, connected, disconnect } = useWallet();
+    const { setVisible } = useWalletModal();
+    const [balance, setBalance] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (!publicKey) {
+            setBalance(null);
+            return;
+        }
+
+        const fetchBalance = async () => {
+            try {
+                const balance = await connection.getBalance(publicKey);
+                setBalance(balance / LAMPORTS_PER_SOL);
+            } catch (error) {
+                console.error("Failed to fetch balance:", error);
+            }
+        };
+
+        fetchBalance();
+        const id = setInterval(fetchBalance, 10000); // 10s refresh
+
+        return () => clearInterval(id);
+    }, [publicKey, connection]);
+
+    const handleConnectClick = () => {
+        if (connected) {
+            disconnect();
+        } else {
+            setVisible(true);
+        }
+    };
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b border-black/5 bg-background/80 px-6 backdrop-blur-md">
@@ -53,13 +90,27 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-4">
-                <div className="hidden md:block text-xs text-muted font-body">
-                    SOL: $143.52
+                <div className="hidden md:flex flex-col items-end gap-0.5">
+                    <div className="text-[10px] text-muted-foreground/60 font-body uppercase tracking-wider leading-none">
+                        * devnet
+                    </div>
+                    {connected && balance !== null && (
+                        <div className="text-xs text-muted font-body">
+                            SOL: {balance.toFixed(4)}
+                        </div>
+                    )}
                 </div>
                 <button
+                    onClick={handleConnectClick}
                     className="border border-black/10 bg-surface px-4 py-1.5 text-sm font-medium transition-transform hover:scale-95 active:scale-90"
                 >
-                    Connect Wallet
+                    {connected ? (
+                        <span className="flex items-center gap-2">
+                            {publicKey?.toBase58().slice(0, 4)}...{publicKey?.toBase58().slice(-4)}
+                        </span>
+                    ) : (
+                        "Connect Wallet"
+                    )}
                 </button>
             </div>
         </header>
