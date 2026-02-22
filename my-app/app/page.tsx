@@ -63,7 +63,7 @@ export default function Lobby() {
         </p>
         <div className="pt-4">
           {/* Simulate Join Game action */}
-          <Link href="/arena/demo-round">
+          <Link href="/arena/1">
             <button className="group relative inline-flex items-center gap-2 border border-foreground bg-foreground px-8 py-3 text-background transition-transform hover:scale-95 active:scale-90 overflow-hidden">
               <span className="font-medium relative z-10">Enter Arena</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 relative z-10" />

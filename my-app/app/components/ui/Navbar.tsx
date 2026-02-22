@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
@@ -16,7 +15,7 @@ function classNames(...classes: (string | undefined | null | false)[]) {
 
 const navItems = [
     { name: "Lobby", path: "/" },
-    { name: "Arena", path: "/arena/demo-round" }, // Defaulting to a demo round for navigation
+    { name: "Arena", path: "/arena/1" },
     { name: "Treasury", path: "/treasury" },
 ];
 
@@ -29,14 +28,17 @@ export default function Navbar() {
 
     useEffect(() => {
         if (!publicKey) {
-            setBalance(null);
             return;
         }
+
+        let cancelled = false;
 
         const fetchBalance = async () => {
             try {
                 const balance = await connection.getBalance(publicKey);
-                setBalance(balance / LAMPORTS_PER_SOL);
+                if (!cancelled) {
+                    setBalance(balance / LAMPORTS_PER_SOL);
+                }
             } catch (error) {
                 console.error("Failed to fetch balance:", error);
             }
@@ -45,16 +47,22 @@ export default function Navbar() {
         fetchBalance();
         const id = setInterval(fetchBalance, 10000); // 10s refresh
 
-        return () => clearInterval(id);
+        return () => {
+            cancelled = true;
+            clearInterval(id);
+        };
     }, [publicKey, connection]);
 
     const handleConnectClick = () => {
         if (connected) {
-            disconnect();
+            setBalance(null);
+            void disconnect();
         } else {
             setVisible(true);
         }
     };
+
+    const displayedBalance = publicKey ? balance : null;
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b border-black/5 bg-background/80 px-6 backdrop-blur-md">
@@ -94,9 +102,9 @@ export default function Navbar() {
                     <div className="text-[10px] text-muted-foreground/60 font-body uppercase tracking-wider leading-none">
                         * devnet
                     </div>
-                    {connected && balance !== null && (
+                    {connected && displayedBalance !== null && (
                         <div className="text-xs text-muted font-body">
-                            SOL: {balance.toFixed(4)}
+                            SOL: {displayedBalance.toFixed(4)}
                         </div>
                     )}
                 </div>
