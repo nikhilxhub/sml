@@ -23,7 +23,7 @@ const itemVariants = {
 };
 
 export default function Arena({ params }: { params: { round_id: string } }) {
-    // In a real app, use params.round_id to fetch data
+    const epochId = /^\d+$/.test(params.round_id) ? BigInt(params.round_id) : null;
 
     return (
         <motion.main
@@ -73,7 +73,7 @@ export default function Arena({ params }: { params: { round_id: string } }) {
                 {/* Right Column: Trading & Tax */}
                 <div className="lg:col-span-4 space-y-6">
                     <motion.div variants={itemVariants}>
-                        <TradingPanel />
+                        <TradingPanel epochId={epochId} />
                     </motion.div>
 
                     <motion.div variants={itemVariants}>

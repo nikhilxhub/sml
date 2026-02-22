@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 
 export default function RealTimeChart() {
+    const barHeights = Array.from({ length: 40 }, (_, index) => 20 + ((index * 17) % 60));
+
     return (
         <div className="relative h-96 w-full border border-black/10 bg-background p-4">
             <div className="absolute top-4 left-4 text-xs font-mono text-muted uppercase tracking-wider">
@@ -11,11 +13,11 @@ export default function RealTimeChart() {
 
             {/* Dummy Chart Visualization */}
             <div className="flex h-full w-full items-end justify-between gap-1 pt-8 pb-4 pl-4 pr-12 opacity-50">
-                {Array.from({ length: 40 }).map((_, i) => (
+                {barHeights.map((targetHeight, i) => (
                     <motion.div
                         key={i}
                         initial={{ height: "10%" }}
-                        animate={{ height: `${20 + Math.random() * 60}%` }}
+                        animate={{ height: `${targetHeight.toString()}%` }}
                         transition={{
                             duration: 2,
                             repeat: Infinity,

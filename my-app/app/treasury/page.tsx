@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowUpRight, Wallet } from "lucide-react";
+import DelegationOpsPanel from "./components/DelegationOpsPanel";
 
 // Staggered animation
 const containerVariants = {
@@ -70,6 +71,10 @@ export default function Treasury() {
                     A small 0.1% protocol fee applies to all external transfers.
                 </p>
             </motion.section>
+
+            <motion.div variants={itemVariants}>
+                <DelegationOpsPanel />
+            </motion.div>
 
             <motion.section variants={itemVariants} className="border-t border-black/10 pt-12">
                 <h3 className="font-serif text-xl mb-6">Transaction History</h3>
